@@ -6,7 +6,7 @@ This project stems from my drive to go a step beyond university coursework, buil
 Develop an end-to-end RESTful API to manage an e-commerce system, applying professional design patterns and ensuring data integrity.
 
 ## 🛠️ Tech Stack
-* **Language:**C#
+* **Language:** C#
 
 * **Framework:** .NET 8 (Web API)
 
