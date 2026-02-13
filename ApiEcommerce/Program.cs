@@ -4,6 +4,8 @@ using ApiEcommerce.Constants;
 using ApiEcommerce.Repository;
 using ApiEcommerce.Repository.IRepository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -13,8 +15,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var dbConnectionString= builder.Configuration.GetConnectionString("ConexionSql");
-
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(dbConnectionString));
+builder.Services.AddResponseCaching(Options=>
+{
+    Options.MaximumBodySize = 1024 * 1024;
+    Options.UseCaseSensitivePaths = true;
+});
+
 builder.Services.AddScoped<ICategoryRepository,CategoryRepository>();
 builder.Services.AddScoped<IProductRepository,ProductRepository>();
 builder.Services.AddScoped<IUserRepository,UserRepository>();
@@ -47,8 +54,20 @@ builder.Services.AddAuthentication(options =>
 });
 
 
+builder.Services.AddControllers(option =>
+{
+    option.CacheProfiles.Add(CacheProfiles.Default10, new CacheProfile() 
+    { 
+        Duration = CacheProfiles.Profile10.Duration 
+    });
+  
+    option.CacheProfiles.Add(CacheProfiles.Default20, new CacheProfile() 
+    { 
+        Duration = CacheProfiles.Profile20.Duration 
+    });
+});
 
-builder.Services.AddControllers();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(
     options =>
@@ -103,6 +122,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors(PolicyNames.AllowSpecificOrigin);
+app.UseResponseCaching();
 
 
 app.UseAuthentication();

@@ -1,3 +1,4 @@
+using ApiEcommerce.Constants;
 using ApiEcommerce.Models.Dto;
 using ApiEcommerce.Repository.IRepository;
 using AutoMapper;
@@ -46,6 +47,7 @@ namespace ApiEcommerce.Controllers
         }
         [AllowAnonymous]
         [HttpGet("{id:int}", Name ="GetCategory")]
+        [ResponseCache(CacheProfileName = CacheProfiles.Default10)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -54,7 +56,12 @@ namespace ApiEcommerce.Controllers
 
         public IActionResult GetCategory(int id)
         {
+
+            System.Console.WriteLine($"Obteniendo categoria con id: {id} a las : {DateTime.Now}");
+
             var category = _categoryRepository.GetCategory(id);
+
+            System.Console.WriteLine($"respuesta con el id {id}");
             if(category == null)
             {
                 
