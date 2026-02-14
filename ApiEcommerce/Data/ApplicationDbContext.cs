@@ -1,7 +1,8 @@
 using ApiEcommerce.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext : IdentityDbContext<AplicationUser>
 {
     
 
@@ -10,9 +11,15 @@ public class ApplicationDbContext : DbContext
         
     }
 
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+    }
+
     public DbSet<Category> Categories {get;set; }
     public DbSet<Product> Products {get;set; }
     public DbSet<User> Users {get;set; }
+    public DbSet<AplicationUser> AplicationUsers {get;set; }
 
 
 }
