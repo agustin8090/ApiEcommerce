@@ -5,12 +5,14 @@ using AutoMapper;
 using ApiEcommerce.Models.DTOs;
 using ApiEcommerce.Models;
 using Microsoft.AspNetCore.Authorization;
+using Asp.Versioning;
 
 
 namespace ApiEcommerce.Controllers
 {
-[Authorize(Roles ="Admin")]     
-    [Route("api/[controller]")]
+    [Authorize(Roles ="Admin")]     
+    [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiVersionNeutral]
     [ApiController]
 
     public class ProductsController : ControllerBase

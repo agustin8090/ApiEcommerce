@@ -3,6 +3,7 @@ using System.Text;
 using ApiEcommerce.Constants;
 using ApiEcommerce.Repository;
 using ApiEcommerce.Repository.IRepository;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Options;
@@ -99,8 +100,60 @@ builder.Services.AddSwaggerGen(
         new List<string>()
       }
     });
-  }
-);
+
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = "API Ecommerce",
+        Description = "API para gestionar productos, usuarios y categorias.",
+        TermsOfService= new Uri("https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1"),
+        Contact = new OpenApiContact
+        {
+            Name = "Agustin",
+            Email = "agustingonzalez4371@gmail.com"
+        },
+        License = new OpenApiLicense
+        {
+            Name = "Licencia de uso",
+            Url = new Uri("https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1")
+        }   
+    });
+
+    options.SwaggerDoc("v2", new OpenApiInfo
+    {
+        Version = "v2",
+        Title = "API Ecommerce",
+        Description = "API para gestionar productos, usuarios y categorias.",
+        TermsOfService= new Uri("https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1"),
+        Contact = new OpenApiContact
+        {
+            Name = "Agustin",
+            Email = "agustingonzalez4371@gmail.com"
+        },
+        License = new OpenApiLicense
+        {
+            Name = "Licencia de uso",
+            Url = new Uri("https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1")
+        }   
+    });
+});
+
+var apiVersioningBuilder = builder.Services.AddApiVersioning(options =>
+{
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.ReportApiVersions = true;
+   // options.ApiVersionReader = ApiVersionReader.Combine(new QueryStringApiVersionReader("api-version"));
+
+});
+
+apiVersioningBuilder.AddApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true;
+});
+
+
 
 builder.Services.AddCors(options =>
 
@@ -117,7 +170,12 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+        options.SwaggerEndpoint("/swagger/v2/swagger.json", "v2");
+    });
+
 }
 
 app.UseHttpsRedirection();
