@@ -6,6 +6,8 @@ using ApiEcommerce.Models.DTOs;
 using ApiEcommerce.Models;
 using Microsoft.AspNetCore.Authorization;
 using Asp.Versioning;
+using Azure;
+using ApiEcommerce.Models.DTOs.Responses;
 
 
 namespace ApiEcommerce.Controllers
@@ -63,6 +65,47 @@ namespace ApiEcommerce.Controllers
             
 
         }
+
+        [AllowAnonymous]
+        [HttpGet("Paged", Name ="GetProductsInPage")]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+
+        public IActionResult GetProductsInPage([FromQuery] int pageNumber, int pageSize= 5)
+        {
+           if(pageNumber <1 || pageSize < 1)
+            {
+                
+                return BadRequest("Los parametros de página deben ser mayores a cero.");
+            }
+
+            var totalProducts= _productRepository.GetTotalProducts();
+            var totalPages= (int)Math.Ceiling((double)totalProducts / pageSize);
+
+            if(pageNumber > totalPages)
+            {
+                
+                return NotFound($"No hay productos disponibles para la página {pageNumber}. El número total de páginas es {totalPages}.");
+            }
+
+            var products = _productRepository.GetProductsInPages(pageNumber, pageSize);
+
+
+            var productDto= _mapper.Map<List<ProductDto>>(products);
+            var paginationResponse= new PaginationResponse<ProductDto>
+            {
+                PageNumber= pageNumber,
+                PageSize= pageSize,
+                TotalPages= totalPages,
+                Items= productDto
+            };
+            return Ok(paginationResponse);
+        }
+
+
+
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]

@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Text;
 using ApiEcommerce.Constants;
+using ApiEcommerce.Data;
 using ApiEcommerce.Models;
 using ApiEcommerce.Repository;
 using ApiEcommerce.Repository.IRepository;
@@ -18,8 +19,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var dbConnectionString= builder.Configuration.GetConnectionString("ConexionSql");
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(dbConnectionString));
-builder.Services.AddResponseCaching(Options=>
+
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+  options.UseSqlServer(dbConnectionString)
+  .UseSeeding((context, _) =>
+  {
+    var appContext = (ApplicationDbContext)context;
+    
+    DataSeeder.SeedData(appContext);
+  })
+  
+);builder.Services.AddResponseCaching(Options=>
 {
     Options.MaximumBodySize = 1024 * 1024;
     Options.UseCaseSensitivePaths = true;
@@ -34,10 +45,6 @@ builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddIdentity<AplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
-
-
-
-
 
 
 var secretKey=builder.Configuration.GetValue<string>("Apisettings:SecretKey");

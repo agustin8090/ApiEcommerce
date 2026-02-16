@@ -20,6 +20,6 @@ public class ApplicationDbContext : IdentityDbContext<AplicationUser>
     public DbSet<Product> Products {get;set; }
     public DbSet<User> Users {get;set; }
     public DbSet<AplicationUser> AplicationUsers {get;set; }
-
+ 
 
 }
